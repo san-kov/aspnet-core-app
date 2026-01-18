@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskFlowREST.DTOs;
 using TaskFlowREST.Models;
+using TaskFlowREST.Services;
 
 namespace TaskFlowREST.Controllers;
 
@@ -8,26 +9,25 @@ namespace TaskFlowREST.Controllers;
 [Route("tasks")]
 public class TasksController : ControllerBase
 {
-    private static readonly List<TaskItem> _tasks = new();
+    private readonly ITaskService _taskService;
     private static int _nextId = 1;
+
+    public TasksController(ITaskService taskService)
+    {
+        _taskService = taskService;
+    }
 
     [HttpGet]
     public ActionResult<List<TaskItem>> GetAll()
     {
-        return Ok(_tasks);
+        var tasks = _taskService.GetAll();
+        return Ok(tasks);
     }
 
     [HttpPost]
     public ActionResult<TaskItem> Create(CreateTaskDto dto)
     {
-        var task = new TaskItem
-        {
-            Id = _nextId++,
-            Title = dto.Title,
-            IsCompleted = false
-        };
-        
-        _tasks.Add(task);
+        var task = _taskService.Create(dto.Title);
 
         return CreatedAtAction(
             nameof(GetAll), new { id = task.Id }, task);
