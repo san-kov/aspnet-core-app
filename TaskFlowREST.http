@@ -1,0 +1,6 @@
+@TaskFlowREST_HostAddress = http://localhost:5027
+
+GET {{TaskFlowREST_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
